@@ -92,7 +92,20 @@ app.get('/signup',
 
 app.post('/login', 
 (req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
 
+  models.Users.get({username})
+    .then((user) => {
+      if (user && models.Users.compare(password, user.password, user.salt)) {
+        res.redirect('/');
+      } else {
+        res.redirect('/login');
+      }
+    })
+    .error((error) => {
+      res.redirect('/login');      
+    });
 });
 
 app.post('/signup', 
@@ -107,17 +120,17 @@ app.post('/signup',
       }
       return models.Users.create(req.body);
     })
-    .then(results => {
-      console.log('*************RESULTS**************');
-      console.log(results);
-      res.status(200).send();
+    .then((results) => {
+      // console.log('*************RESULTS**************');
+      // console.log(results);
+      res.redirect('/');
     })
-    .error(error => {
+    .error((error) => {
       res.status(500).send(error);
     })    
-    .catch(user => {
-      console.log('*************USER**************');      
-      console.log(user);
+    .catch((user) => {
+      // console.log('*************USER**************');      
+      // console.log(user);
       res.redirect('/signup');
     });
 
