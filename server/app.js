@@ -29,8 +29,10 @@ app.get('/create',
 
 app.get('/links', 
 (req, res, next) => {
+  // console.log(req.body);
   models.Links.getAll()
     .then(links => {
+      console.log(links);
       res.status(200).send(links);
     })
     .error(error => {
@@ -41,6 +43,7 @@ app.get('/links',
 app.post('/links', 
 (req, res, next) => {
   var url = req.body.url;
+  console.log(url);
   if (!models.Links.isValidUrl(url)) {
     // send back a 404 if link is not valid
     return res.sendStatus(404);
@@ -78,18 +81,46 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 app.get('/login', 
-(req, res) => {
+(req, res, next) => {
   res.render('login');
 });
 
 app.get('/signup', 
-(req, res) => {
+(req, res, next) => {
   res.render('signup');
 });
 
-app.get('/login', 
-(req, res) => {
-  res.render('login');
+app.post('/login', 
+(req, res, next) => {
+
+});
+
+app.post('/signup', 
+(req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  models.Users.get({username})
+    .then((user) => {
+      if (user) {
+        throw user;
+      }
+      return models.Users.create(req.body);
+    })
+    .then(results => {
+      console.log('*************RESULTS**************');
+      console.log(results);
+      res.status(200).send();
+    })
+    .error(error => {
+      res.status(500).send(error);
+    })    
+    .catch(user => {
+      console.log('*************USER**************');      
+      console.log(user);
+      res.redirect('/signup');
+    });
+
 });
 
 
