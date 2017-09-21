@@ -4,6 +4,7 @@ const utils = require('./lib/hashUtils');
 const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
+const cookieParser = require('./middleware/cookieParser');
 const models = require('./models');
 
 const app = express();
@@ -15,7 +16,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-
+app.use(cookieParser);
+app.use(Auth.createSession);
 
 app.get('/', 
 (req, res) => {
@@ -120,9 +122,14 @@ app.post('/signup',
       }
       return models.Users.create(req.body);
     })
-    .then((results) => {
+    .then((result) => {
+      var userId = result.insertId;
+      return models.Sessions.update({id: req.session.id}, {userId: result.insertId});
       // console.log('*************RESULTS**************');
       // console.log(results);
+    })
+    .then((result) => {
+      //console.log('+++++++++++++++ Model Session Update ++++++++++++');
       res.redirect('/');
     })
     .error((error) => {
@@ -133,8 +140,22 @@ app.post('/signup',
       // console.log(user);
       res.redirect('/signup');
     });
-
 });
+
+app.get('/logout',
+(req, res, next) => {
+  res.clearCookie('shortlyid');
+  
+  models.Sessions.delete({id: req.session.id})
+    .then((result) => {
+      res.redirect('/login');
+    })
+    .catch((error) => {
+      if (error) { console.error(error); }
+      res.redirect('/login');
+    });
+});
+
 
 
 /************************************************************/

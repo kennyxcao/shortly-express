@@ -9,11 +9,11 @@ const parseData = data => {
 };
 
 const parseCookies = (req, res, next) => {
-  //console.log(req.headers.cookie);
   if (req.headers.cookie) {
     var cookies = req.headers.cookie.split(';');    
     req.cookies = parseData(cookies);
-    //console.log(parseData(cookies));
+  } else {
+    req.cookies = {};
   }
   next();
 };

@@ -51,7 +51,7 @@ class Model {
    * the conditions provided, only one will be provided upon fulfillment.
    */
   get(options) {
-    //console.log(options);
+    //console.log(options); {username: 'fred', }
     let parsedOptions = parseData(options);
     //console.log(parsedOptions);
 

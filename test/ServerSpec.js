@@ -325,7 +325,7 @@ describe('', function() {
     });
   });
 
-  describe('Express Middleware', function() {
+  xdescribe('Express Middleware', function() {
     var cookieParser = require('../server/middleware/cookieParser.js');
     var createSession = require('../server/middleware/auth.js').createSession;
 
@@ -371,7 +371,7 @@ describe('', function() {
       });
     });
 
-    describe('Session Parser', function() {
+    xdescribe('Session Parser', function() {
       it('initializes a new session when there are no cookies on the request', function(done) {
         var requestWithoutCookies = httpMocks.createRequest();
         var response = httpMocks.createResponse();
@@ -480,7 +480,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Sessions and cookies', function() {
+  describe('Sessions and cookies', function() {
     var requestWithSession;
     var cookieJar;
 
