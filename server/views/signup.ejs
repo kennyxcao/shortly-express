@@ -16,7 +16,7 @@
   <a href="/login">Login to your account &rarr;</a>
 <p>
 <script>
-  if (<%= locals.invalidAttempt ? true : false %>) {
+  <% if (locals.invalidAttempt)  { %>
     alert("User Name Already Exists - Please Try Again");
-  }
+  <% } %>
 </script>

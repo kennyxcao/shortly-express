@@ -16,7 +16,7 @@
   <a href="/signup">Create an Account &rarr;</a>
 <p>
 <script>
-  if (<%= locals.invalidAttempt ? true : false %>) {
+  <% if (locals.invalidAttempt)  { %>
     alert("Invalid User Name or Password - Please Try Again");
-  }
+  <% } %>
 </script>

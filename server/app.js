@@ -21,6 +21,7 @@ app.use(Auth.createSession);
 
 app.get('/', Auth.verifySession, 
 (req, res) => {
+  console.log(req.session);
   res.render('index');
 });
 
@@ -105,12 +106,11 @@ app.post('/login',
       }
     })
     .then(() => {
-      req.session.user = username;      
       res.redirect('/');      
     })
     .catch(() => {
       app.locals.invalidAttempt = true;
-      res.redirect('/login');      
+      res.redirect('/login');
     });
 });
 
@@ -130,7 +130,6 @@ app.post('/signup',
       return models.Sessions.update({id: req.session.id}, {userId: result.insertId});
     })
     .then((result) => {
-      req.session.user = username;
       res.redirect('/');
     })
     .error((error) => {
