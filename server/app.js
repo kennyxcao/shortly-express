@@ -82,11 +82,13 @@ app.post('/links',
 app.get('/login', 
 (req, res, next) => {
   res.render('login');
+  app.locals.invalidAttempt = false;
 });
 
 app.get('/signup', 
 (req, res, next) => {
   res.render('signup');
+  app.locals.invalidAttempt = false;
 });
 
 app.post('/login', 
@@ -107,6 +109,7 @@ app.post('/login',
       res.redirect('/');      
     })
     .catch(() => {
+      app.locals.invalidAttempt = true;
       res.redirect('/login');      
     });
 });
@@ -134,6 +137,7 @@ app.post('/signup',
       res.status(500).send(error);
     })    
     .catch((user) => {
+      app.locals.invalidAttempt = true;
       res.redirect('/signup');
     });
 });
