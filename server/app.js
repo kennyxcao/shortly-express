@@ -31,10 +31,8 @@ app.get('/create', Auth.verifySession,
 
 app.get('/links', Auth.verifySession,
 (req, res, next) => {
-  // console.log(req.body);
   models.Links.getAll()
     .then(links => {
-      console.log(links);
       res.status(200).send(links);
     })
     .error(error => {
@@ -45,7 +43,6 @@ app.get('/links', Auth.verifySession,
 app.post('/links', 
 (req, res, next) => {
   var url = req.body.url;
-  console.log(url);
   if (!models.Links.isValidUrl(url)) {
     // send back a 404 if link is not valid
     return res.sendStatus(404);
@@ -102,15 +99,14 @@ app.post('/login',
       if (user && models.Users.compare(password, user.password, user.salt)) {
         return models.Sessions.update({id: req.session.id}, {userId: user.id});
       } else {
-        res.redirect('/login');
+        throw user;
       }
     })
     .then(() => {
-      res.session.user = username;      
+      req.session.user = username;      
       res.redirect('/');      
     })
-    .error((error) => {
-      if (error) { console.error(error); }      
+    .catch(() => {
       res.redirect('/login');      
     });
 });
@@ -128,12 +124,10 @@ app.post('/signup',
       return models.Users.create(req.body);
     })
     .then((result) => {
-      var userId = result.insertId;
       return models.Sessions.update({id: req.session.id}, {userId: result.insertId});
-
     })
     .then((result) => {
-      res.session.user = username;
+      req.session.user = username;
       res.redirect('/');
     })
     .error((error) => {
@@ -159,7 +153,6 @@ app.get('/logout',
 });
 
 
-
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
@@ -170,7 +163,6 @@ app.get('/:code', (req, res, next) => {
 
   return models.Links.get({ code: req.params.code })
     .tap(link => {
-
       if (!link) {
         throw new Error('Link does not exist');
       }

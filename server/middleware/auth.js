@@ -18,7 +18,7 @@ module.exports.createSession = (req, res, next) => {
       next();
     })
     .catch((error) => {
-      console.log('++++++++++++++ Invalid Session Hash - Resetting Cookie +++++++++++++++++++');
+      //console.log('++++++++++++++ Invalid Session Hash - Resetting Cookie +++++++++++++++++++');
       req.cookies = {};
       module.exports.createSession(req, res, next);
     });
