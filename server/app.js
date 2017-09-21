@@ -19,17 +19,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(cookieParser);
 app.use(Auth.createSession);
 
-app.get('/', 
+app.get('/', Auth.verifySession, 
 (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create', Auth.verifySession,
 (req, res) => {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links', Auth.verifySession,
 (req, res, next) => {
   // console.log(req.body);
   models.Links.getAll()
@@ -100,12 +100,17 @@ app.post('/login',
   models.Users.get({username})
     .then((user) => {
       if (user && models.Users.compare(password, user.password, user.salt)) {
-        res.redirect('/');
+        return models.Sessions.update({id: req.session.id}, {userId: user.id});
       } else {
         res.redirect('/login');
       }
     })
+    .then(() => {
+      res.session.user = username;      
+      res.redirect('/');      
+    })
     .error((error) => {
+      if (error) { console.error(error); }      
       res.redirect('/login');      
     });
 });
@@ -125,19 +130,16 @@ app.post('/signup',
     .then((result) => {
       var userId = result.insertId;
       return models.Sessions.update({id: req.session.id}, {userId: result.insertId});
-      // console.log('*************RESULTS**************');
-      // console.log(results);
+
     })
     .then((result) => {
-      //console.log('+++++++++++++++ Model Session Update ++++++++++++');
+      res.session.user = username;
       res.redirect('/');
     })
     .error((error) => {
       res.status(500).send(error);
     })    
     .catch((user) => {
-      // console.log('*************USER**************');      
-      // console.log(user);
       res.redirect('/signup');
     });
 });
