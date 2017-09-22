@@ -206,6 +206,7 @@ describe('', function() {
         done();
       });
     });
+  
   });
 
   describe('Account Login:', function() {
@@ -276,6 +277,54 @@ describe('', function() {
       });
     });
   });
+  
+  /*************************************************************************************/
+  /* Additional Unit tests                                                             */
+  /*************************************************************************************/
+  describe('Account Signup and Login Redirect - Extra:', function() {
+    var requestWithSession;
+    var cookieJar;
+
+    var addUser = function(callback) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/signup',
+        'json': {
+          'username': 'Vivian',
+          'password': 'Vivian'
+        }
+      };
+      requestWithSession(options, callback);
+    };
+
+    beforeEach(function(done) {
+      cookieJar = request.jar();
+      requestWithSession = request.defaults({ jar: cookieJar });
+      done();
+    });
+        
+    it('Redirects to main page if a user tries to access the signup page and is signed in', function(done) {
+      addUser(function(err, res, body) {      
+        if (err) { return done(err); }
+        requestWithSession('http://127.0.0.1:4568/signup', function(error, res, body) {
+          if (error) { return done(error); }
+          expect(res.req.path).to.equal('/');
+          done();
+        }); 
+      });
+    });
+
+    it('Redirects to main page if a user tries to access the login page and is signed in', function(done) {
+      addUser(function(err, res, body) {      
+        if (err) { return done(err); }
+        requestWithSession('http://127.0.0.1:4568/login', function(error, res, body) {
+          if (error) { return done(error); }
+          expect(res.req.path).to.equal('/');
+          done();
+        }); 
+      });
+    });    
+  });  
 
   describe('Sessions Schema:', function() {
     it('contains a sessions table', function(done) {
@@ -596,6 +645,8 @@ describe('', function() {
       });
     });
   });
+
+  
 
   describe('Link creation:', function() {
 

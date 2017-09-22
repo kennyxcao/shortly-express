@@ -16,12 +16,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Invoke cookie parser and create a session object as a property of request
 app.use(cookieParser);
 app.use(Auth.createSession);
 
 app.get('/', Auth.verifySession, 
 (req, res) => {
-  console.log(req.session);
   res.render('index');
 });
 
@@ -80,13 +80,13 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-app.get('/login', 
+app.get('/login', Auth.verifyUserNotLoggedIn,
 (req, res, next) => {
   res.render('login');
   app.locals.invalidAttempt = false;
 });
 
-app.get('/signup', 
+app.get('/signup', Auth.verifyUserNotLoggedIn, 
 (req, res, next) => {
   res.render('signup');
   app.locals.invalidAttempt = false;

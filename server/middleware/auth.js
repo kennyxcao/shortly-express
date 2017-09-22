@@ -35,3 +35,11 @@ module.exports.verifySession = (req, res, next) => {
     res.redirect('/login');
   }
 };
+
+module.exports.verifyUserNotLoggedIn = (req, res, next) => {
+  if (models.Sessions.isLoggedIn(req.session)) {
+    res.redirect('/');
+  } else {
+    next();    
+  }
+};
